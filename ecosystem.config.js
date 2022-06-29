@@ -1,11 +1,16 @@
 module.exports = {
   apps: [
     {
-      name: 'NuxtAppName',
-      exec_mode: 'cluster',
-      instances: 'max', // Or a number of instances
-      script: './node_modules/nuxt/bin/nuxt.js',
+      name: 'dashboard',
+      script: './node_modules/.bin/nuxt',
       args: 'start',
+      wait_ready: true,
+      listen_timeout: 5000,
+      env: {
+        HOST: '0.0.0.0',
+        PORT: 3000,
+        NODE_ENV: 'production',
+      },
     },
   ],
 }
