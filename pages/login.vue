@@ -66,8 +66,8 @@ setInteractionMode('eager')
 @Component({ layout: 'nonav' })
 export default class Login extends mixins(ErrorMixin) {
   loading = false
-  email = 'dani.lesmiadi@pegadaian.co.id'
-  password = 'password'
+  email = ''
+  password = ''
   show = false
   $refs!: {
     observer: InstanceType<typeof ValidationObserver>
