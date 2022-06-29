@@ -34,12 +34,15 @@ export default {
     host: process.env.HOST,
   },
   env: {
-    apiUrl: process.env.API_URL || 'http://localhost:10000',
+    apiUrl: process.env.API_URL || 'http://34.128.115.108:10000',
   },
 
   css: [],
 
-  plugins: [{ src: '~/plugins/veeValidate', ssr: false },{ src: '~/plugins/vueEditor', ssr: false }],
+  plugins: [
+    { src: '~/plugins/veeValidate', ssr: false },
+    { src: '~/plugins/vueEditor', ssr: false },
+  ],
 
   components: true,
 
