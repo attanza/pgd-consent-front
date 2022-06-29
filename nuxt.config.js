@@ -34,7 +34,7 @@ export default {
     host: process.env.HOST,
   },
   env: {
-    apiUrl: process.env.API_URL || 'http://34.128.115.108:10000',
+    apiUrl: process.env.API_URL || 'http://10.184.15.212:10000',
   },
 
   css: [],
