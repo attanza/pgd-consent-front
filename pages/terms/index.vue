@@ -4,7 +4,11 @@
       {{ title }}
     </v-card-title>
     <v-toolbar flat color="transparent">
-      <v-btn color="primary" @click="showForm = !showForm">
+      <v-btn
+        color="primary"
+        @click="showForm = !showForm"
+        v-if="checkRole('ADMIN EDITOR')"
+      >
         <v-icon>add</v-icon>
       </v-btn>
       <v-btn class="ml-2" @click="showConfirm = true">
@@ -63,9 +67,14 @@ import { IConsent } from '~/interfaces/consent.interface'
 import { debounce } from 'typescript-debounce-decorator'
 import { ICollectionResponse } from '~/interfaces/api-response.interface'
 import { ITerm } from '~/interfaces/term.interface'
+import { CommonMixin } from '~/mixins/common.mixin'
 
 @Component({ components: { FormData, Dialog } })
-export default class TermsPage extends mixins(TableMixin, ErrorMixin) {
+export default class TermsPage extends mixins(
+  TableMixin,
+  ErrorMixin,
+  CommonMixin
+) {
   link = '/terms'
   title = 'Terms'
   headers = headers

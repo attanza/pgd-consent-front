@@ -1,4 +1,5 @@
 import { Component, Vue } from 'vue-property-decorator'
+import { IUser } from '~/interfaces/user.interface'
 @Component
 export class CommonMixin extends Vue {
   get currentEdit() {
@@ -9,16 +10,24 @@ export class CommonMixin extends Vue {
     return this.$store.state.comboData
   }
 
-  get user() {
-    return this.$store.state.auth.user
+  get user(): IUser {
+    return this.$store.state.auth.user as IUser
+  }
+
+  get userRole(): string {
+    return this.user.role
   }
 
   get vuexFormData() {
     return this.$store.state.formData
   }
 
-  get globalLoading() {
+  get globalLoading(): boolean {
     return this.$store.state.globalLoading
+  }
+
+  checkRole(roles: string): boolean {
+    return roles.split(' ').includes(this.userRole)
   }
 
   checkDoUpdate(data1: any, data2: any): boolean {

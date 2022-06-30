@@ -5,11 +5,22 @@
         <v-icon>keyboard_arrow_left</v-icon>
       </v-btn>
       <v-spacer />
-      <v-btn color="danger" dark class="mr-3" @click="showDialog = !showDialog">
+      <v-btn
+        color="danger"
+        dark
+        class="mr-3"
+        @click="showDialog = !showDialog"
+        v-if="checkRole('ADMIN')"
+      >
         <v-icon>delete</v-icon>
       </v-btn>
 
-      <v-btn color="primary" dark @click="onUpdate">
+      <v-btn
+        color="primary"
+        dark
+        @click="onUpdate"
+        v-if="checkRole('ADMIN EDITOR')"
+      >
         <v-icon>save</v-icon>
       </v-btn>
     </v-toolbar>
@@ -17,6 +28,7 @@
       :form-items="formItems"
       :init-value="currentEdit"
       @onSubmit="onUpdate"
+      :showSaveBtn="checkRole('ADMIN EDITOR')"
     />
     <Dialog
       :show-dialog="showDialog"

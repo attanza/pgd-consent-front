@@ -4,7 +4,11 @@
       {{ title }}
     </v-card-title>
     <v-toolbar flat color="transparent">
-      <v-btn color="primary" @click="showForm = !showForm">
+      <v-btn
+        color="primary"
+        @click="showForm = !showForm"
+        v-if="checkRole('ADMIN EDITOR')"
+      >
         <v-icon>add</v-icon>
       </v-btn>
       <v-btn class="ml-2" @click="showConfirm = true">
@@ -60,9 +64,14 @@ import Dialog from '@/components/Dialog.vue'
 import { debounce } from 'typescript-debounce-decorator'
 import { ICollectionResponse } from '~/interfaces/api-response.interface'
 import { ICheckList } from '~/interfaces/check-list.interface'
+import { CommonMixin } from '~/mixins/common.mixin'
 
 @Component({ components: { FormData, Dialog } })
-export default class CheckListPage extends mixins(TableMixin, ErrorMixin) {
+export default class CheckListPage extends mixins(
+  TableMixin,
+  ErrorMixin,
+  CommonMixin
+) {
   link = '/check-lists'
   title = 'Check Lists'
   headers = headers

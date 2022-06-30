@@ -7,6 +7,7 @@
       <shared-form
         :form-items="formItems"
         show-close-btn
+        :showSaveBtn="checkRole('ADMIN EDITOR')"
         @onSubmit="submit"
         @close="closeForm"
       />
@@ -18,6 +19,7 @@
 import { Component, Mixins } from 'vue-property-decorator'
 import { Prop, Watch } from 'vue-property-decorator'
 import { ITerm } from '~/interfaces/term.interface'
+import { CommonMixin } from '~/mixins/common.mixin'
 import { ErrorMixin } from '~/mixins/error.mixin'
 import { TableMixin } from '~/mixins/table.mixin'
 import SharedForm from '../SharedForm.vue'
@@ -28,7 +30,11 @@ import { formItems } from './util'
     SharedForm,
   },
 })
-export default class CheckListFormData extends Mixins(ErrorMixin, TableMixin) {
+export default class CheckListFormData extends Mixins(
+  ErrorMixin,
+  TableMixin,
+  CommonMixin
+) {
   dialog = false
   title = 'Create Term'
   formItems = formItems
