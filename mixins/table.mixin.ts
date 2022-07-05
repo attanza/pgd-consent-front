@@ -99,4 +99,13 @@ export class TableMixin extends Vue {
     const snackbarData: ISnackbar = { color, text, show: true }
     this.$store.commit('SET_SNACKBAR', snackbarData)
   }
+
+  async getSources() {
+    try {
+      const resp = await this.$axios.$get('/sources?limit100&select=name')
+      return resp.data
+    } catch (error) {
+      console.log('error', error)
+    }
+  }
 }

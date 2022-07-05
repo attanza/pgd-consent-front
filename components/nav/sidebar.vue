@@ -18,6 +18,7 @@
           :to="item.to"
           router
           exact
+          :disabled="menuDisable(item.role)"
         >
           <v-list-item-action>
             <v-icon>{{ item.icon }}</v-icon>
@@ -30,7 +31,6 @@
     </v-navigation-drawer>
     <v-app-bar fixed app color="primary" dark>
       <v-app-bar-nav-icon @click.stop="drawer = !drawer" />
-      <!-- <v-toolbar-title v-text="title" /> -->
       <v-spacer />
       <v-toolbar-title v-if="$auth.user">{{ $auth.user.name }}</v-toolbar-title>
       <v-menu bottom left>
@@ -56,12 +56,21 @@
 </template>
 
 <script lang="ts">
-import { Vue, Component } from 'vue-property-decorator'
+import { mixins, Component } from 'nuxt-property-decorator'
 import menus from '@/components/nav/menu'
+import { CommonMixin } from '~/mixins/common.mixin'
+import { EUserRole } from '~/interfaces/user.interface'
 @Component
-export default class SideBarComponent extends Vue {
+export default class SideBarComponent extends mixins(CommonMixin) {
   drawer = true
   items = menus
+
+  menuDisable(roles: EUserRole[] | undefined): boolean {
+    if (!roles) {
+      return false
+    }
+    return !roles.includes(this.userRole)
+  }
 
   logout() {
     this.$auth.logout()

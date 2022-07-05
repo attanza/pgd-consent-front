@@ -48,6 +48,7 @@ import { ErrorMixin } from '@/mixins/error.mixin'
 import { CommonMixin } from '@/mixins/common.mixin'
 import { ICheckList } from '~/interfaces/check-list.interface'
 import { IApiResponse } from '~/interfaces/api-response.interface'
+import { TableMixin } from '~/mixins/table.mixin'
 
 @Component({
   components: {
@@ -57,20 +58,20 @@ import { IApiResponse } from '~/interfaces/api-response.interface'
 })
 export default class CheckListDetailComponent extends Mixins(
   ErrorMixin,
-  CommonMixin
+  CommonMixin,
+  TableMixin
 ) {
   link = '/check-lists'
   formItems = formItems
   showDialog = false
   async onUpdate() {
     const data = { ...this.vuexFormData }
-    data.age = parseInt(data.age)
     const doUpdate = this.checkDoUpdate(data, this.currentEdit)
     if (doUpdate) {
       try {
         this.activateGlobalLoading(true)
         const resp: IApiResponse<ICheckList> = await this.$axios.$put(
-          `${this.link}/${this.currentEdit.id}`,
+          `${this.link}/${this.currentEdit._id}`,
           data
         )
 
@@ -80,6 +81,24 @@ export default class CheckListDetailComponent extends Mixins(
       } catch (e) {
         this.activateGlobalLoading(false)
         this.catchError(e)
+      }
+    }
+  }
+
+  mounted() {
+    this.populateSources()
+  }
+
+  async populateSources() {
+    const idx = this.formItems.findIndex((f) => f.key === 'source')
+    if (idx !== -1) {
+      if (
+        this.formItems[idx] &&
+        this.formItems[idx].items &&
+        this.formItems[idx].items?.length === 0
+      ) {
+        const sources = await this.getSources()
+        this.formItems[idx].items = sources
       }
     }
   }

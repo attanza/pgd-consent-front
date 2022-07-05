@@ -35,9 +35,11 @@
         <template v-slot:item.title="{ item }">
           <NuxtLink :to="`${link}/${item._id}`">{{ item.title }}</NuxtLink>
         </template>
-        <template v-slot:item.isPublish="{ item }">
-          <v-icon v-if="item.isPublish">done</v-icon>
-          <v-icon v-else>close</v-icon>
+        <template v-slot:item.source="{ item }">
+          {{ item.source ? item.source.name : '' }}
+        </template>
+        <template v-slot:item.createdAt="{ item }">
+          {{ $moment(item.createdAt).format('DD MMM YYYY') }}
         </template>
       </v-data-table>
     </v-card-text>
@@ -92,7 +94,7 @@ export default class TermsPage extends mixins(
   async populateTable(): Promise<void> {
     try {
       this.activateGlobalLoading(true)
-      const queries = this.getQueries()
+      const queries = this.getQueries() + 'populate=source'
       const resp: ICollectionResponse<ITerm> = await this.$axios.$get(
         this.link + queries
       )
@@ -110,7 +112,12 @@ export default class TermsPage extends mixins(
   }
 
   onCreate(data: IConsent): void {
-    this.items.unshift(data)
+    if (this.items.length === 0) {
+      this.items = []
+      this.items.push(data)
+    } else {
+      this.items.unshift(data)
+    }
     this.closeForm()
   }
 

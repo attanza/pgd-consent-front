@@ -26,6 +26,7 @@ import { CommonMixin } from '~/mixins/common.mixin'
 import { ICollectionResponse } from '~/interfaces/api-response.interface'
 import { ITerm } from '~/interfaces/term.interface'
 import { IItems } from '~/interfaces/form-item.interface'
+import { ISource } from '~/interfaces/source.interface'
 
 @Component({
   components: {
@@ -41,6 +42,7 @@ export default class ConsentFormData extends mixins(
   title = 'Create Consent'
   formItems = formItems
   source = ''
+  sources: ISource[] = []
 
   @Prop({ type: Boolean }) show!: boolean
   @Prop({ type: String }) link!: string
@@ -55,6 +57,18 @@ export default class ConsentFormData extends mixins(
     if (this.vuexFormData.source && this.vuexFormData.source !== '') {
       this.source = this.vuexFormData.source
       this.getTerms()
+    }
+  }
+
+  mounted() {
+    this.populateSources()
+  }
+
+  async populateSources() {
+    this.sources = await this.getSources()
+    const idx = this.formItems.findIndex((f) => f.key === 'source')
+    if (idx !== -1) {
+      this.formItems[idx].items = this.sources
     }
   }
 
@@ -86,7 +100,16 @@ export default class ConsentFormData extends mixins(
     try {
       this.activateGlobalLoading(true)
       const resp = await this.$axios.$post(this.link, data)
-      this.$emit('onCreate', resp.data)
+      const createdData: any = { ...resp.data }
+      if (typeof createdData.source === 'string') {
+        const idx = this.sources.findIndex(
+          (s: ISource) => s._id === createdData.source
+        )
+        if (idx !== -1) {
+          createdData.source = this.sources[idx]
+        }
+      }
+      this.$emit('onCreate', createdData)
       this.activateGlobalLoading(false)
     } catch (e) {
       this.activateGlobalLoading(false)

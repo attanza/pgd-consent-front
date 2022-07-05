@@ -27,8 +27,8 @@
     <shared-form
       :form-items="formItems"
       :init-value="currentEdit"
-      @onSubmit="onUpdate"
       :showSaveBtn="checkRole('ADMIN EDITOR')"
+      @onSubmit="onUpdate"
     />
     <Dialog
       :show-dialog="showDialog"
@@ -40,19 +40,15 @@
 </template>
 
 <script lang="ts">
-import { Component, Mixins } from 'vue-property-decorator'
+import { Component, mixins } from 'nuxt-property-decorator'
 import SharedForm from '../SharedForm.vue'
 import Dialog from '../Dialog.vue'
 import { formItems } from './util'
-import { ErrorMixin } from '~/mixins/error.mixin'
-import { CommonMixin } from '~/mixins/common.mixin'
-import {
-  IApiResponse,
-  ICollectionResponse,
-} from '~/interfaces/api-response.interface'
-import { ITerm } from '~/interfaces/term.interface'
-import { IConsent } from '~/interfaces/consent.interface'
-import { IItems } from '~/interfaces/form-item.interface'
+import { ErrorMixin } from '@/mixins/error.mixin'
+import { CommonMixin } from '@/mixins/common.mixin'
+import { IApiResponse } from '~/interfaces/api-response.interface'
+import { TableMixin } from '~/mixins/table.mixin'
+import { ISource } from '~/interfaces/source.interface'
 
 @Component({
   components: {
@@ -60,64 +56,54 @@ import { IItems } from '~/interfaces/form-item.interface'
     Dialog,
   },
 })
-export default class ArticleDetailComponent extends Mixins(
+export default class CheckListDetailComponent extends mixins(
   ErrorMixin,
-  CommonMixin
+  CommonMixin,
+  TableMixin
 ) {
-  link = '/consents'
+  link = '/sources'
   formItems = formItems
   showDialog = false
-  source = ''
-
-  mounted() {
-    const idx = this.formItems.findIndex((f) => f.key === 'terms')
-    if (idx !== -1) {
-      this.formItems.splice(idx, 1)
-    }
-    if (this.currentEdit.source && this.currentEdit.source !== '') {
-      this.source = this.currentEdit.source._id
-      this.getTerms()
-    }
-  }
-  async getTerms() {
-    try {
-      this.activateGlobalLoading(true)
-      const url = `/terms?limit=100&fieldKey=source&fieldValue=${this.source}`
-      const resp: ICollectionResponse<ITerm> = await this.$axios.$get(url)
-      const terms: IItems[] = []
-      resp.data.map((doc: ITerm) => {
-        terms.push({ _id: doc._id, name: doc.title })
-      })
-      const idx = this.formItems.findIndex((f) => f.key === 'term')
-      if (idx !== -1) {
-        this.formItems[idx].items = terms
-      }
-
-      this.activateGlobalLoading(false)
-    } catch (e) {
-      this.activateGlobalLoading(false)
-      this.catchError(e)
-    }
-  }
   async onUpdate() {
     const data = { ...this.vuexFormData }
-    if (typeof data.source === 'object') {
-      data.source = data.source._id
+    if (typeof data.ipAddresses === 'string' && data.ipAddresses !== '') {
+      data.ipAddresses = data.ipAddresses.split(',')
     }
+    console.log('data', data)
+
     const doUpdate = this.checkDoUpdate(data, this.currentEdit)
     if (doUpdate) {
       try {
         this.activateGlobalLoading(true)
-        const resp: IApiResponse<IConsent> = await this.$axios.$put(
+        const resp: IApiResponse<ISource> = await this.$axios.$put(
           `${this.link}/${this.currentEdit._id}`,
           data
         )
+
         this.$store.commit('SET_CURRENT_EDIT', resp.data)
         this.activateSnackbar('success', 'Data updated')
         this.activateGlobalLoading(false)
       } catch (e) {
         this.activateGlobalLoading(false)
         this.catchError(e)
+      }
+    }
+  }
+
+  mounted() {
+    this.populateSources()
+  }
+
+  async populateSources() {
+    const idx = this.formItems.findIndex((f) => f.key === 'source')
+    if (idx !== -1) {
+      if (
+        this.formItems[idx] &&
+        this.formItems[idx].items &&
+        this.formItems[idx].items?.length === 0
+      ) {
+        const sources = await this.getSources()
+        this.formItems[idx].items = sources
       }
     }
   }

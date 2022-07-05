@@ -6,7 +6,7 @@ import moment from '~/utils/moment'
 export const headers: ITableHeader[] = [
   { text: 'Title', value: 'title' },
   { text: 'Source', value: 'source' },
-  { text: 'Publish', value: 'isPublish' },
+  { text: 'Created', value: 'createdAt' },
 ]
 
 export const formItems: IFormItem[] = [
@@ -21,10 +21,7 @@ export const formItems: IFormItem[] = [
     caption: 'Source',
     el: EFormItemElement.COMBOBOX,
     rules: 'required',
-    items: Object.values(EApplicationType).map((t: string) => ({
-      _id: t,
-      name: t,
-    })),
+    items: [],
   },
   {
     key: 'isPublish',

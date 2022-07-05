@@ -1,33 +1,28 @@
-import { EApplicationType } from '~/interfaces/aplication-type.enum'
-import { EFormItemElement, IFormItem } from '~/interfaces/form-item.interface'
+import { IFormItem } from '~/interfaces/form-item.interface'
 import { ITableHeader } from '~/interfaces/table-header.interface'
 import moment from '~/utils/moment'
 
 export const headers: ITableHeader[] = [
-  { text: 'Content', value: 'content' },
-  { text: 'Source', value: 'source' },
+  { text: 'Action', value: 'action' },
+  { text: 'User', value: 'userId' },
+  { text: 'Resource', value: 'resource' },
   { text: 'Created', value: 'createdAt' },
 ]
 
-export const formItems: IFormItem[] = [
-  {
-    key: 'content',
-    caption: 'Content',
-    el: EFormItemElement.TEXTAREA,
-    rules: 'required',
-  },
-  {
-    key: 'source',
-    caption: 'Source',
-    el: EFormItemElement.COMBOBOX,
-    rules: 'required',
-    items: [],
-  },
-]
+export const formItems: IFormItem[] = []
 
 export const generateDownloadData = (items: any): any => {
   const dataToDownload: any[] = []
-  const keys = ['content', 'createdAt']
+  const keys = [
+    'userId',
+    'email',
+    'resource',
+    'resourceId',
+    'action',
+    'prevData',
+    'Data',
+    'createdAt',
+  ]
   items.forEach((i: any): void => {
     const data: any = {}
     for (const key of keys) {

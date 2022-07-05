@@ -52,6 +52,7 @@ import {
 } from '~/interfaces/api-response.interface'
 import { ICheckList } from '~/interfaces/check-list.interface'
 import { ITerm } from '~/interfaces/term.interface'
+import { TableMixin } from '~/mixins/table.mixin'
 
 @Component({
   components: {
@@ -61,7 +62,8 @@ import { ITerm } from '~/interfaces/term.interface'
 })
 export default class ArticleDetailComponent extends Mixins(
   ErrorMixin,
-  CommonMixin
+  CommonMixin,
+  TableMixin
 ) {
   link = '/terms'
   formItems = formItems
@@ -69,9 +71,25 @@ export default class ArticleDetailComponent extends Mixins(
   source = ''
 
   mounted() {
+    this.populateSources()
+
     if (this.currentEdit.source && this.currentEdit.source !== '') {
-      this.source = this.currentEdit.source
+      this.source = this.currentEdit.source._id
       this.getCheckLists()
+    }
+  }
+
+  async populateSources() {
+    const idx = this.formItems.findIndex((f) => f.key === 'source')
+    if (idx !== -1) {
+      if (
+        this.formItems[idx] &&
+        this.formItems[idx].items &&
+        this.formItems[idx].items?.length === 0
+      ) {
+        const sources = await this.getSources()
+        this.formItems[idx].items = sources
+      }
     }
   }
 
@@ -98,7 +116,12 @@ export default class ArticleDetailComponent extends Mixins(
 
   async onUpdate() {
     const data = { ...this.vuexFormData }
-    data.age = parseInt(data.age)
+    if (typeof data.source === 'object') {
+      data.source = data.source._id
+    }
+    if (typeof data.checkLists[0] === 'object') {
+      data.checkLists = data.checkLists.map((c: any) => c._id)
+    }
     const doUpdate = this.checkDoUpdate(data, this.currentEdit)
     if (doUpdate) {
       try {

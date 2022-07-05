@@ -35,6 +35,12 @@
         <template v-slot:item.nik="{ item }">
           <NuxtLink :to="`${link}/${item._id}`">{{ item.nik }}</NuxtLink>
         </template>
+        <template v-slot:item.source="{ item }">
+          {{ item.source ? item.source.name : '' }}
+        </template>
+        <template v-slot:item.createdAt="{ item }">
+          {{ $moment(item.createdAt).format('DD MMM YYYY') }}
+        </template>
         <template v-slot:item.actions="{ item }">
           <v-icon @click="toFormPage(item._id)"> list_alt </v-icon>
         </template>
@@ -90,7 +96,7 @@ export default class ConsentsPage extends mixins(
   async populateTable(): Promise<void> {
     try {
       this.activateGlobalLoading(true)
-      const queries = this.getQueries()
+      const queries = this.getQueries() + 'populate=source'
       const resp: ICollectionResponse<IConsent> = await this.$axios.$get(
         this.link + queries
       )

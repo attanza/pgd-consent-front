@@ -7,7 +7,7 @@
       <v-btn
         color="primary"
         @click="showForm = !showForm"
-        v-if="checkRole('ADMIN EDITOR')"
+        v-if="checkRole('ADMIN')"
       >
         <v-icon>add</v-icon>
       </v-btn>
@@ -32,14 +32,10 @@
         :footer-props="footerProps"
         :server-items-length="total"
       >
-        <template v-slot:item.content="{ item }">
-          <NuxtLink :to="`${link}/${item._id}`">{{
-            strLimit(item.content, 100)
-          }}</NuxtLink>
+        <template v-slot:item.name="{ item }">
+          <NuxtLink :to="`${link}/${item._id}`">{{ item.name }}</NuxtLink>
         </template>
-        <template v-slot:item.source="{ item }">
-          {{ item.source ? item.source.name : '' }}
-        </template>
+
         <template v-slot:item.createdAt="{ item }">
           {{ $moment(item.createdAt).format('DD MMM YYYY') }}
         </template>
@@ -64,22 +60,22 @@
 import { Component, mixins, Watch } from 'nuxt-property-decorator'
 import { ErrorMixin } from '~/mixins/error.mixin'
 import { TableMixin } from '~/mixins/table.mixin'
-import { headers, generateDownloadData } from '@/components/check-lists/util'
-import FormData from '@/components/check-lists/FormData.vue'
+import { headers, generateDownloadData } from '@/components/users/util'
+import FormData from '@/components/users/FormData.vue'
 import Dialog from '@/components/Dialog.vue'
 import { debounce } from 'typescript-debounce-decorator'
 import { ICollectionResponse } from '~/interfaces/api-response.interface'
-import { ICheckList } from '~/interfaces/check-list.interface'
 import { CommonMixin } from '~/mixins/common.mixin'
+import { IUser } from '~/interfaces/user.interface'
 
 @Component({ components: { FormData, Dialog } })
-export default class CheckListPage extends mixins(
+export default class TermsPage extends mixins(
   TableMixin,
   ErrorMixin,
   CommonMixin
 ) {
-  link = '/check-lists'
-  title = 'Check Lists'
+  link = '/users'
+  title = 'Users'
   headers = headers
 
   @Watch('options', { immediate: true, deep: true })
@@ -95,8 +91,8 @@ export default class CheckListPage extends mixins(
   async populateTable(): Promise<void> {
     try {
       this.activateGlobalLoading(true)
-      const queries = this.getQueries() + 'populate=source'
-      const resp: ICollectionResponse<ICheckList> = await this.$axios.$get(
+      const queries = this.getQueries()
+      const resp: ICollectionResponse<IUser> = await this.$axios.$get(
         this.link + queries
       )
       this.total = resp.meta.totalDocs
@@ -112,8 +108,13 @@ export default class CheckListPage extends mixins(
     this.showForm = false
   }
 
-  onCreate(data: ICheckList): void {
-    this.items.unshift(data)
+  onCreate(data: IUser): void {
+    if (this.items.length === 0) {
+      this.items = []
+      this.items.push(data)
+    } else {
+      this.items.unshift(data)
+    }
     this.closeForm()
   }
 

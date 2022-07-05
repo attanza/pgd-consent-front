@@ -1,5 +1,5 @@
 import { Component, Vue } from 'vue-property-decorator'
-import { IUser } from '~/interfaces/user.interface'
+import { EUserRole, IUser } from '~/interfaces/user.interface'
 @Component
 export class CommonMixin extends Vue {
   get currentEdit() {
@@ -14,7 +14,7 @@ export class CommonMixin extends Vue {
     return this.$store.state.auth.user as IUser
   }
 
-  get userRole(): string {
+  get userRole(): EUserRole {
     return this.user.role
   }
 

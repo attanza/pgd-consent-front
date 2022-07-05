@@ -26,6 +26,10 @@ export default {
         rel: 'stylesheet',
         href: 'https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Material+Icons|Material+Icons+Outlined',
       },
+      {
+        rel: 'stylesheet',
+        href: 'https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Material+Icons|Material+Icons+Outlined',
+      },
     ],
   },
 
@@ -42,6 +46,7 @@ export default {
   plugins: [
     { src: '~/plugins/veeValidate', ssr: false },
     { src: '~/plugins/vueEditor', ssr: false },
+    { src: '~/plugins/vueChart', ssr: false },
   ],
 
   components: true,

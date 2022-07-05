@@ -3,8 +3,14 @@ export interface IUser {
   name: string
   email: string
   password: string
-  role: string
+  role: EUserRole
   isActive: boolean
   createdAt?: Date
   updatedAt?: Date
+}
+
+export enum EUserRole {
+  VIEWER = 'VIEWER',
+  EDITOR = 'EDITOR',
+  ADMIN = 'ADMIN',
 }

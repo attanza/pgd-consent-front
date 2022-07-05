@@ -1,33 +1,51 @@
 import { EApplicationType } from '~/interfaces/aplication-type.enum'
 import { EFormItemElement, IFormItem } from '~/interfaces/form-item.interface'
 import { ITableHeader } from '~/interfaces/table-header.interface'
+import { EUserRole } from '~/interfaces/user.interface'
 import moment from '~/utils/moment'
 
 export const headers: ITableHeader[] = [
-  { text: 'Content', value: 'content' },
-  { text: 'Source', value: 'source' },
+  { text: 'Name', value: 'name' },
+  { text: 'Email', value: 'email' },
+  { text: 'Role', value: 'role' },
   { text: 'Created', value: 'createdAt' },
 ]
 
 export const formItems: IFormItem[] = [
   {
-    key: 'content',
-    caption: 'Content',
-    el: EFormItemElement.TEXTAREA,
+    key: 'name',
+    caption: 'Name',
+    el: EFormItemElement.TEXT,
     rules: 'required',
   },
   {
-    key: 'source',
-    caption: 'Source',
-    el: EFormItemElement.COMBOBOX,
-    rules: 'required',
+    key: 'email',
+    caption: 'Email',
+    el: EFormItemElement.TEXT,
+    rules: 'required|email',
     items: [],
+  },
+  {
+    key: 'password',
+    caption: 'Password',
+    el: EFormItemElement.TEXT,
+    rules: 'required|min:8',
+    items: [],
+    type: 'password',
+  },
+  {
+    key: 'role',
+    caption: 'Role',
+    el: EFormItemElement.COMBOBOX,
+    items: Object.values(EUserRole).map((role) => ({ _id: role, name: role })),
+    rules: 'required',
+    cacheItems: true,
   },
 ]
 
 export const generateDownloadData = (items: any): any => {
   const dataToDownload: any[] = []
-  const keys = ['content', 'createdAt']
+  const keys = ['name', 'email', 'role', 'createdAt']
   items.forEach((i: any): void => {
     const data: any = {}
     for (const key of keys) {

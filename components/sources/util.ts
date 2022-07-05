@@ -4,30 +4,57 @@ import { ITableHeader } from '~/interfaces/table-header.interface'
 import moment from '~/utils/moment'
 
 export const headers: ITableHeader[] = [
-  { text: 'Content', value: 'content' },
-  { text: 'Source', value: 'source' },
+  { text: 'Name', value: 'name' },
+  { text: 'Description', value: 'description' },
   { text: 'Created', value: 'createdAt' },
 ]
 
 export const formItems: IFormItem[] = [
   {
-    key: 'content',
-    caption: 'Content',
-    el: EFormItemElement.TEXTAREA,
+    key: 'name',
+    caption: 'Name',
+    el: EFormItemElement.TEXT,
     rules: 'required',
   },
   {
-    key: 'source',
-    caption: 'Source',
-    el: EFormItemElement.COMBOBOX,
-    rules: 'required',
-    items: [],
+    key: 'description',
+    caption: 'Description',
+    el: EFormItemElement.TEXTAREA,
+    rules: '',
+  },
+  {
+    key: 'clientId',
+    caption: 'Client ID',
+    el: EFormItemElement.TEXT,
+    rules: '',
+    disabled: true,
+  },
+  {
+    key: 'clientSecret',
+    caption: 'Client Secret',
+    el: EFormItemElement.TEXT,
+    rules: '',
+    disabled: true,
+  },
+
+  {
+    key: 'ipAddresses',
+    caption: 'IP Addresses, separated by comma',
+    el: EFormItemElement.TEXT,
+    rules: '',
   },
 ]
 
 export const generateDownloadData = (items: any): any => {
   const dataToDownload: any[] = []
-  const keys = ['content', 'createdAt']
+  const keys = [
+    'name',
+    'description',
+    'clientId',
+    'clientSecret',
+    'ipAddresses',
+    'createdAt',
+  ]
   items.forEach((i: any): void => {
     const data: any = {}
     for (const key of keys) {

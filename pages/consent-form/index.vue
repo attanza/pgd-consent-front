@@ -30,6 +30,17 @@
             outlined
           />
         </ValidationProvider>
+
+        <ValidationProvider v-slot="{ errors }" name="cif" rules="required">
+          <v-text-field
+            v-model="cif"
+            :error-messages="errors"
+            name="cif"
+            label="CIF"
+            placeholder="CIF"
+            outlined
+          />
+        </ValidationProvider>
         <ValidationProvider v-slot="{ errors }" name="phone" rules="required">
           <v-text-field
             v-model="phone"
@@ -54,19 +65,11 @@
             outlined
           />
         </ValidationProvider>
-        <ValidationProvider v-slot="{ errors }" name="email" rules="required">
-          <v-select
-            v-model="source"
-            :error-messages="errors"
-            :items="appType"
-            name="source"
-            label="Source"
-            placeholder="Source"
-            outlined
-          />
-        </ValidationProvider>
 
-        <div v-html="currentEdit.term.content" class="my-4"></div>
+        <div
+          v-html="currentEdit.term ? currentEdit.term.content : ''"
+          class="my-4"
+        ></div>
 
         <v-checkbox
           v-for="checkList in checkLists"
@@ -93,7 +96,6 @@ import { Context } from '@nuxt/types/app'
 import { Component, mixins } from 'nuxt-property-decorator'
 import { ICheckList } from '~/interfaces/check-list.interface'
 import { IConsent } from '~/interfaces/consent.interface'
-import { EApplicationType } from '~/interfaces/aplication-type.enum'
 import { CommonMixin } from '~/mixins/common.mixin'
 import { IApiResponse } from '~/interfaces/api-response.interface'
 import { ErrorMixin } from '~/mixins/error.mixin'
@@ -105,9 +107,9 @@ import { ValidationObserver } from 'vee-validate'
 export default class ConsentFormPage extends mixins(CommonMixin, ErrorMixin) {
   selected: any[] = []
   checkLists: ICheckList[] = []
-  appType = Object.values(EApplicationType)
   name = ''
   nik = ''
+  cif = ''
   phone = ''
   email = ''
   source = ''
@@ -130,13 +132,15 @@ export default class ConsentFormPage extends mixins(CommonMixin, ErrorMixin) {
   }
   initializeData() {
     const consent: IConsent = this.currentEdit
-    this.checkLists = consent.term.checkLists
+
+    this.checkLists = consent.term?.checkLists || []
     this.selected = consent.checkLists
     this.name = consent.name
     this.nik = consent.nik
+    this.cif = consent.cif
     this.email = consent.email
     this.phone = consent.phone
-    this.source = consent.source
+    this.source = consent.source._id
   }
 
   async submit() {

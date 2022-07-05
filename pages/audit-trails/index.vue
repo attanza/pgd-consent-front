@@ -4,13 +4,6 @@
       {{ title }}
     </v-card-title>
     <v-toolbar flat color="transparent">
-      <v-btn
-        color="primary"
-        @click="showForm = !showForm"
-        v-if="checkRole('ADMIN EDITOR')"
-      >
-        <v-icon>add</v-icon>
-      </v-btn>
       <v-btn class="ml-2" @click="showConfirm = true">
         <v-icon color="primary"> cloud_download </v-icon>
       </v-btn>
@@ -32,14 +25,10 @@
         :footer-props="footerProps"
         :server-items-length="total"
       >
-        <template v-slot:item.content="{ item }">
-          <NuxtLink :to="`${link}/${item._id}`">{{
-            strLimit(item.content, 100)
-          }}</NuxtLink>
+        <template v-slot:item.action="{ item }">
+          <NuxtLink :to="`${link}/${item._id}`">{{ item.action }}</NuxtLink>
         </template>
-        <template v-slot:item.source="{ item }">
-          {{ item.source ? item.source.name : '' }}
-        </template>
+
         <template v-slot:item.createdAt="{ item }">
           {{ $moment(item.createdAt).format('DD MMM YYYY') }}
         </template>
@@ -64,22 +53,22 @@
 import { Component, mixins, Watch } from 'nuxt-property-decorator'
 import { ErrorMixin } from '~/mixins/error.mixin'
 import { TableMixin } from '~/mixins/table.mixin'
-import { headers, generateDownloadData } from '@/components/check-lists/util'
-import FormData from '@/components/check-lists/FormData.vue'
+import { headers, generateDownloadData } from '@/components/audit-trails/util'
+import FormData from '@/components/audit-trails/FormData.vue'
 import Dialog from '@/components/Dialog.vue'
 import { debounce } from 'typescript-debounce-decorator'
 import { ICollectionResponse } from '~/interfaces/api-response.interface'
-import { ICheckList } from '~/interfaces/check-list.interface'
 import { CommonMixin } from '~/mixins/common.mixin'
+import { IAuditTrail } from '~/interfaces/audit-trail.interface'
 
 @Component({ components: { FormData, Dialog } })
-export default class CheckListPage extends mixins(
+export default class AuditTrailsPage extends mixins(
   TableMixin,
   ErrorMixin,
   CommonMixin
 ) {
-  link = '/check-lists'
-  title = 'Check Lists'
+  link = '/audit-trails'
+  title = 'Audit Trails'
   headers = headers
 
   @Watch('options', { immediate: true, deep: true })
@@ -95,8 +84,8 @@ export default class CheckListPage extends mixins(
   async populateTable(): Promise<void> {
     try {
       this.activateGlobalLoading(true)
-      const queries = this.getQueries() + 'populate=source'
-      const resp: ICollectionResponse<ICheckList> = await this.$axios.$get(
+      const queries = this.getQueries()
+      const resp: ICollectionResponse<IAuditTrail> = await this.$axios.$get(
         this.link + queries
       )
       this.total = resp.meta.totalDocs
@@ -112,8 +101,13 @@ export default class CheckListPage extends mixins(
     this.showForm = false
   }
 
-  onCreate(data: ICheckList): void {
-    this.items.unshift(data)
+  onCreate(data: IAuditTrail): void {
+    if (this.items.length === 0) {
+      this.items = []
+      this.items.push(data)
+    } else {
+      this.items.unshift(data)
+    }
     this.closeForm()
   }
 
